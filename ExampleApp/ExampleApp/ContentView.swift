@@ -9,9 +9,14 @@ import SwiftUI
 import SwiftUISectionTab
 
 struct ContentView: View {
+    @State private var tabIndex: Int = 0
+    
     var body: some View {
         VStack {
-            SectionTabView()
+            SectionTabView(tabIndex: $tabIndex) {
+                Text("Test View1")
+                Text("Test View2")
+            }
         }
         .padding()
     }
