@@ -12,13 +12,22 @@ struct ContentView: View {
     @State private var tabIndex: Int = 0
     
     var body: some View {
-        VStack {
-            SectionTabView(tabIndex: $tabIndex) {
+        SectionTabView(tabIndex: $tabIndex) {
+            ZStack {
+                Color.red
                 Text("Test View1")
+            }
+            
+            ZStack {
+                Color.blue
                 Text("Test View2")
             }
+            
+            ZStack {
+                Color.purple
+                Text("Test View3")
+            }
         }
-        .padding()
     }
 }
 
