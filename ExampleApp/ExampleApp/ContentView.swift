@@ -10,42 +10,46 @@ import SwiftUISectionTab
 
 struct ContentView: View {
     @State private var tabIndex: Int = 0
+    @State private var count = 0
     
     var body: some View {
         SectionTabView(tabIndex: $tabIndex) {
             ZStack {
-                Color.red
-                Text("Test View1")
+                Text("First View")
             }
             .sectionItem {
-                Text("Tab1")
-                    .font(.title)
+                Text("First Tab")
+                    .frame(height: 50)
             }
             
             ZStack {
-                Color.blue
-                Text("Test View2")
-            }            
+                Text("Second View")
+            }
             .sectionItem {
-                Text("Tab2")
-                    .font(.title)
+                Text("Second Tap")
             }
             
-            ZStack {
-                Color.purple
-                Text("Test View3")
+            ZStack {                
+                Text("Third View")
             }
             .sectionItem {
-                Text("Tab3")
-                    .font(.title)
+                Text("Third Tap")
             }
         }
-        .selectedColor(.purple)
-        .spacing(40)
-        .lineSpacing(20)
+        .selectedColor(.blue)
+        .lineHeight(2)
+        .spacing(20)        
     }
 }
 
 #Preview {
     ContentView()
+}
+
+struct CountView: View {
+    @Binding var count: Int
+    
+    var body: some View {
+        Text("\(count)")
+    }
 }

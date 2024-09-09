@@ -1,6 +1,7 @@
 // The Swift Programming Language
 // https://docs.swift.org/swift-book
 // TODO: .tabBarItem 처럼 클로저로 View를 받는방법
+// TODO: View가 재렌더링 되지않는현상
 
 import SwiftUI
 
@@ -9,6 +10,8 @@ public protocol SectionTapComposable {
     func unSelectedColor(_ color: Color) -> SectionTabView
     func spacing(_ spacing: CGFloat) -> SectionTabView
     func lineSpacing(_ spacing: CGFloat) -> SectionTabView
+    func lineHeight(_ height: CGFloat) -> SectionTabView
+    func hideBottomLine(_ isVisible: Bool) -> SectionTabView
 }
 
 public struct SectionTabView: SectionTapComposable, View {
@@ -24,6 +27,9 @@ public struct SectionTabView: SectionTapComposable, View {
     private var unSelectedColor: Color = .gray
     private var spacing: CGFloat = .zero
     private var lineSpacing: CGFloat = .zero
+    private var lineHeight: CGFloat = 1
+    private var lineColor: Color = .gray
+    private var lineVisible: Bool = false
     
     public init<V0: View>(tabIndex: Binding<Int>,
                           @ViewBuilder content: () -> TupleView<(V0)>) {
@@ -104,11 +110,13 @@ public struct SectionTabView: SectionTapComposable, View {
                     
                     Rectangle()
                         .frame(maxWidth: .infinity, maxHeight: 1)
-                        .foregroundColor(.gray)
+                        .foregroundColor(lineColor)
+                        .opacity(lineVisible ? 0 : 1)
                         .overlay {
-                            Path(CGRect(x: 0, y: 0, width: width, height: 1))
-                                .offset(x: offset)
+                            Path(CGRect(x: 0, y: -lineHeight, width: width, height: lineHeight))
                                 .foregroundColor(seletedColor)
+                                .offset(x: offset)
+                            
                         }
                 }
                 .coordinateSpace(name: "OuterView")
@@ -150,6 +158,18 @@ public struct SectionTabView: SectionTapComposable, View {
     public func lineSpacing(_ spacing: CGFloat) -> SectionTabView {
         var instance = self
         instance.lineSpacing = spacing
+        return instance
+    }
+    
+    public func lineHeight(_ height: CGFloat) -> SectionTabView {
+        var instance = self
+        instance.lineHeight = height
+        return instance
+    }
+    
+    public func hideBottomLine(_ isVisible: Bool) -> SectionTabView {
+        var instance = self
+        instance.lineVisible = isVisible
         return instance
     }
 }
