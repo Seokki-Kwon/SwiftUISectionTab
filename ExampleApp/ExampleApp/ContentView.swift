@@ -17,16 +17,23 @@ struct ContentView: View {
                 Color.red
                 Text("Test View1")
             }
+            .sectionItem {
+                Text("Tab1")
+            }
             
             ZStack {
                 Color.blue
                 Text("Test View2")
+            }
+            .sectionItem {
+                Text("Tab2")
             }
             
             ZStack {
                 Color.purple
                 Text("Test View3")
             }
+                        
         }
     }
 }

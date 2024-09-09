@@ -8,14 +8,14 @@ public struct SectionTabView: View {
     
     @Binding private var tabIndex: Int
     
-    private let views: [AnyView]
+    @State private var views: [AnyView]
+    @State private var items: [SectionItem] = []
     
     public init<V0: View>(tabIndex: Binding<Int>,
                           @ViewBuilder content: () -> TupleView<(V0)>) {
         self._tabIndex = tabIndex
         let cv = content().value
         self.views = [AnyView(cv)]
-        
     }
     
     public init<V0: View, V1: View>(tabIndex: Binding<Int>,
@@ -37,24 +37,27 @@ public struct SectionTabView: View {
             if views.count > tabIndex {
                 HStack {
                     // menu
-                    ForEach(0..<views.count, id: \.self) { index in
-                        TabBarButton(text: "\(index)", isSelected: .constant(tabIndex == index))
-                            .overlay{
-                                GeometryReader { g in
-                                    Color.clear.contentShape(Rectangle())
-                                        .onTapGesture {
-                                            tabIndex = index
-                                        }
-                                }
+                    ForEach(0..<items.count, id: \.self) { index in
+                        items[index].view
+                            .onTapGesture {
+                                tabIndex = index
                             }
                     }
                 }
                 
                 // content
                 Spacer()
-                views[tabIndex]
+                ZStack {
+                    ForEach(0..<views.count, id: \.self) { index in
+                        views[index]
+                            .opacity(index == tabIndex ? 1 : 0)
+                    }
+                }
                 Spacer()
             }
         }
+        .onPreferenceChange(SectionItemKey.self, perform: { newViwe in
+            items.append(contentsOf: newViwe)
+        })
     }
 }
