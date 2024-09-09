@@ -7,6 +7,8 @@ import SwiftUI
 public protocol SectionTapComposable {
     func selectedColor(_ color: Color) -> SectionTabView
     func unSelectedColor(_ color: Color) -> SectionTabView
+    func spacing(_ spacing: CGFloat) -> SectionTabView
+    func lineSpacing(_ spacing: CGFloat) -> SectionTabView
 }
 
 public struct SectionTabView: SectionTapComposable, View {
@@ -20,6 +22,8 @@ public struct SectionTabView: SectionTapComposable, View {
     
     private var seletedColor: Color = .black
     private var unSelectedColor: Color = .gray
+    private var spacing: CGFloat = .zero
+    private var lineSpacing: CGFloat = .zero
     
     public init<V0: View>(tabIndex: Binding<Int>,
                           @ViewBuilder content: () -> TupleView<(V0)>) {
@@ -42,42 +46,72 @@ public struct SectionTabView: SectionTapComposable, View {
         self.views = [AnyView(cv.0), AnyView(cv.1), AnyView(cv.2)]
     }
     
+    public init<V0: View, V1: View, V2: View, V3: View>(tabIndex: Binding<Int>,
+                                                        @ViewBuilder content: () -> TupleView<(V0, V1, V2, V3)>) {
+        self._tabIndex = tabIndex
+        let cv = content().value
+        self.views = [AnyView(cv.0), AnyView(cv.1), AnyView(cv.2)]
+    }
+    
+    public init<V0: View, V1: View, V2: View, V3: View, V4: View>(tabIndex: Binding<Int>,
+                                                                  @ViewBuilder content: () -> TupleView<(V0, V1, V2, V3, V4)>) {
+        self._tabIndex = tabIndex
+        let cv = content().value
+        self.views = [AnyView(cv.0), AnyView(cv.1), AnyView(cv.2)]
+    }
+    
+    public init<V0: View, V1: View, V2: View, V3: View, V4: View, V5: View>(tabIndex: Binding<Int>,
+                                                                            @ViewBuilder content: () -> TupleView<(V0, V1, V2, V3, V4, V5)>) {
+        self._tabIndex = tabIndex
+        let cv = content().value
+        self.views = [AnyView(cv.0), AnyView(cv.1), AnyView(cv.2)]
+    }
+    
+    public init<V0: View, V1: View, V2: View, V3: View, V4: View, V5: View, V6: View>(tabIndex: Binding<Int>,
+                                                                                      @ViewBuilder content: () -> TupleView<(V0, V1, V2, V3, V4, V5, V6)>) {
+        self._tabIndex = tabIndex
+        let cv = content().value
+        self.views = [AnyView(cv.0), AnyView(cv.1), AnyView(cv.2)]
+    }
+    
     public  var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             if views.count > tabIndex {
-                HStack {
-                    // menu
-                    ForEach(0..<items.count, id: \.self) { index in
-                        items[index].view
-                            .overlay(content: {
-                                GeometryReader { proxy in
-                                    Color.clear.contentShape(Rectangle())
-                                        .onAppear {
-                                            offset = proxy.frame(in: .named("OuterView")).minX - 10
-                                            width = proxy.frame(in: .named("OuterView")).width + 20
-                                        }
-                                        .onTapGesture {
-                                            tabIndex = index
-                                            withAnimation {
-                                                offset = proxy.frame(in: .named("OuterView")).minX - 10
-                                                width = proxy.frame(in: .named("OuterView")).width + 20
+                VStack(spacing: 0) {
+                    HStack(spacing: spacing) {
+                        // menu
+                        ForEach(0..<items.count, id: \.self) { index in
+                            items[index].view
+                                .overlay(content: {
+                                    GeometryReader { proxy in
+                                        Color.clear.contentShape(Rectangle())
+                                            .onAppear {
+                                                offset = proxy.frame(in: .named("OuterView")).minX - lineSpacing / 2
+                                                width = proxy.frame(in: .named("OuterView")).width + lineSpacing
                                             }
-                                        }
-                                }
-                            })
-                            .foregroundColor(tabIndex == index ? seletedColor : unSelectedColor)
+                                            .onTapGesture {
+                                                tabIndex = index
+                                                withAnimation {
+                                                    offset = proxy.frame(in: .named("OuterView")).minX - lineSpacing / 2
+                                                    width = proxy.frame(in: .named("OuterView")).width + lineSpacing
+                                                }
+                                            }
+                                    }
+                                })
+                                .foregroundColor(tabIndex == index ? seletedColor : unSelectedColor)
+                        }
                     }
-                    Spacer()
+                    
+                    Rectangle()
+                        .frame(maxWidth: .infinity, maxHeight: 1)
+                        .foregroundColor(.gray)
+                        .overlay {
+                            Path(CGRect(x: 0, y: 0, width: width, height: 1))
+                                .offset(x: offset)
+                                .foregroundColor(seletedColor)
+                        }
                 }
-                
-                Rectangle()
-                    .frame(maxWidth: .infinity, maxHeight: 1)
-                    .foregroundColor(.gray)
-                    .overlay {
-                        Path(CGRect(x: 0, y: 0, width: width, height: 1))
-                            .offset(x: offset)
-                            .foregroundColor(seletedColor)
-                    }
+                .coordinateSpace(name: "OuterView")
                 
                 // content
                 Spacer()
@@ -90,7 +124,6 @@ public struct SectionTabView: SectionTapComposable, View {
                 Spacer()
             }
         }
-        .coordinateSpace(name: "OuterView")
         .onPreferenceChange(SectionItemKey.self, perform: { newViwe in
             items.append(contentsOf: newViwe)
         })
@@ -105,6 +138,18 @@ public struct SectionTabView: SectionTapComposable, View {
     public func unSelectedColor(_ color: Color) -> SectionTabView {
         var instance = self
         instance.unSelectedColor = color
+        return instance
+    }
+    
+    public func spacing(_ spacing: CGFloat) -> SectionTabView {
+        var instance = self
+        instance.spacing = spacing
+        return instance
+    }
+    
+    public func lineSpacing(_ spacing: CGFloat) -> SectionTabView {
+        var instance = self
+        instance.lineSpacing = spacing
         return instance
     }
 }

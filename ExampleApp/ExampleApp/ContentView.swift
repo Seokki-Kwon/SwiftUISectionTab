@@ -19,6 +19,7 @@ struct ContentView: View {
             }
             .sectionItem {
                 Text("Tab1")
+                    .font(.title)
             }
             
             ZStack {
@@ -27,6 +28,7 @@ struct ContentView: View {
             }            
             .sectionItem {
                 Text("Tab2")
+                    .font(.title)
             }
             
             ZStack {
@@ -35,9 +37,12 @@ struct ContentView: View {
             }
             .sectionItem {
                 Text("Tab3")
+                    .font(.title)
             }
         }
         .selectedColor(.purple)
+        .spacing(40)
+        .lineSpacing(20)
     }
 }
 
