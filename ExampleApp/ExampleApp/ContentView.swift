@@ -24,7 +24,7 @@ struct ContentView: View {
             ZStack {
                 Color.blue
                 Text("Test View2")
-            }
+            }            
             .sectionItem {
                 Text("Tab2")
             }
@@ -33,8 +33,11 @@ struct ContentView: View {
                 Color.purple
                 Text("Test View3")
             }
-                        
+            .sectionItem {
+                Text("Tab3")
+            }
         }
+        .selectedColor(.purple)
     }
 }
 

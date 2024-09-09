@@ -4,12 +4,22 @@
 
 import SwiftUI
 
-public struct SectionTabView: View {
+public protocol SectionTapComposable {
+    func selectedColor(_ color: Color) -> SectionTabView
+    func unSelectedColor(_ color: Color) -> SectionTabView
+}
+
+public struct SectionTabView: SectionTapComposable, View {
     
     @Binding private var tabIndex: Int
     
     @State private var views: [AnyView]
     @State private var items: [SectionItem] = []
+    @State private var offset: CGFloat = .zero
+    @State private var width: CGFloat = .zero
+    
+    private var seletedColor: Color = .black
+    private var unSelectedColor: Color = .gray
     
     public init<V0: View>(tabIndex: Binding<Int>,
                           @ViewBuilder content: () -> TupleView<(V0)>) {
@@ -39,11 +49,35 @@ public struct SectionTabView: View {
                     // menu
                     ForEach(0..<items.count, id: \.self) { index in
                         items[index].view
-                            .onTapGesture {
-                                tabIndex = index
-                            }
+                            .overlay(content: {
+                                GeometryReader { proxy in
+                                    Color.clear.contentShape(Rectangle())
+                                        .onAppear {
+                                            offset = proxy.frame(in: .named("OuterView")).minX - 10
+                                            width = proxy.frame(in: .named("OuterView")).width + 20
+                                        }
+                                        .onTapGesture {
+                                            tabIndex = index
+                                            withAnimation {
+                                                offset = proxy.frame(in: .named("OuterView")).minX - 10
+                                                width = proxy.frame(in: .named("OuterView")).width + 20
+                                            }
+                                        }
+                                }
+                            })
+                            .foregroundColor(tabIndex == index ? seletedColor : unSelectedColor)
                     }
+                    Spacer()
                 }
+                
+                Rectangle()
+                    .frame(maxWidth: .infinity, maxHeight: 1)
+                    .foregroundColor(.gray)
+                    .overlay {
+                        Path(CGRect(x: 0, y: 0, width: width, height: 1))
+                            .offset(x: offset)
+                            .foregroundColor(seletedColor)
+                    }
                 
                 // content
                 Spacer()
@@ -56,8 +90,23 @@ public struct SectionTabView: View {
                 Spacer()
             }
         }
+        .coordinateSpace(name: "OuterView")
         .onPreferenceChange(SectionItemKey.self, perform: { newViwe in
             items.append(contentsOf: newViwe)
         })
     }
+    
+    public func selectedColor(_ color: Color) -> SectionTabView {
+        var instance = self
+        instance.seletedColor = color
+        return instance
+    }
+    
+    public func unSelectedColor(_ color: Color) -> SectionTabView {
+        var instance = self
+        instance.unSelectedColor = color
+        return instance
+    }
 }
+
+
